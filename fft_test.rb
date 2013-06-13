@@ -1,3 +1,4 @@
+# require "fftw3"
 #
 # 簡単なfftとのこと　
 #
@@ -26,17 +27,17 @@ end
 
 
 #
-# 条件となる波形
+# 条件となるスペクトル
 # 
-def factor_wave(rate = 2048)
+def factor_spectol(rate = 2048)
   
   # よく分からんサンプル条件係数。
   # 2048サンプルなら1.0
   # 4096サンプルなら2.0
   sample_factor = 1.0 
   arr = (0...rate).map do |n|
-    value = n * 2.0 * sample_factor / (rate)
-    p value
+    value = n * 2.0 * sample_factor / (rate / 2)
+    value = value <= 1.0 ? value : 1.0 # asinが値域を超えないように強制的に丸め込んだ
     v = Math.cos(Math.asin(value))
     v * 100
   end
@@ -51,8 +52,9 @@ end
 def display_array(arr)
   arr.map do |v|
     s = [" "] * 20
-    min, max = [(-v * 3 + 10).round, 10].sort
-    s[min..max] = ["."] * (max - min)
+    min, max = [(-v * 3 + 10).round, 10].sort #-1.0 ~ 0までと、0 ~ 1.0までの値を 10を中心として値を丸め込む
+    s[min..max] = ["#"] * (max - min)
+    p s
     s
   end.transpose.each do |l|
     puts l.join
@@ -72,7 +74,7 @@ def put_fft_response(arr, rate)
   end
 end
 
-p factor_wave
+
 # put_fft_response(sample_wave, 64)
 # p fft(sample_wave)
 
