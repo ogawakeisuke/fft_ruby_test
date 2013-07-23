@@ -19,7 +19,6 @@ fft = Array.new(window_size/2,[])
 buf = RubyAudio::Buffer.float(window_size)
 
 RubyAudio::Sound.open(fname) do |snd|
-  
   # バッファ分、sndが尽きるまでどんどん読み込む
   while snd.read(buf) != 0
     
@@ -31,14 +30,15 @@ RubyAudio::Sound.open(fname) do |snd|
     na = NArray.to_na(buf.to_a)
 
     # fftしてまるめこんだのを用意するところ
-    fft_slice = FFTW3.fft(na, -1).to_a[0, window_size/2]
-
+    fft_slice = FFTW3.fft(na, -1).to_a[0, window_size / 2]
+    p fft_slice.count
 
     # fftという配列にfftの結果をぶち込む
-    j=0
-    fft_slice.each { |x| fft[j] << x; j+=1 }
+    j = 0
+    fft_slice.each do |x| 
+      fft[j] << x 
+      j += 1 
+    end
+
   end
 end
-
-
-p fft.size
