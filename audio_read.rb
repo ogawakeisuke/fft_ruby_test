@@ -5,10 +5,15 @@ require "fftw3"
 def wav_read( file )
   system("sox -t wav #{file} -c 2 -r 48000 -t sw _tmp1.sw")
   data = NArray.to_na(open("_tmp1.sw", "rb").read.unpack("s*"))
-  return data.reshape(2,data.length/2).transpose(1,0)
+  return data
+  # return data.reshape(2,data.length/2).transpose(1,0)
 end
 
 
-# array = wav_read(ARGV[0])
-# fc = FFTW3.fft(array, -1)
-# p fc
+def fft(na, window_size)
+  FFTW3.fft(na, -1).to_a[0, window_size/2]
+end
+
+na = wav_read("dot.wav")
+
+p fft(na, 1024)

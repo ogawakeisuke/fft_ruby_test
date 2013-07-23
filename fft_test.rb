@@ -74,6 +74,7 @@ def put_fft_response(arr, rate)
   end
 end
 
+p fft sample_wave
 
 # put_fft_response(sample_wave, 64)
 # p fft(sample_wave)
