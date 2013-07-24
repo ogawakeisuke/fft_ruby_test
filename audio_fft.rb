@@ -4,14 +4,14 @@ require "fftw3"
 require 'cairo'
 
 
-fname = "dot.wav"
+fname = "beat.wav"
 window_size = 1024
 wave = Array.new
 
 #
 # 512個の空の配列が造られる
 #
-fft = Array.new(window_size / 2,[])
+fft = Array.new(window_size / 2).collect { Array.new }
 
 
 #
@@ -33,17 +33,18 @@ RubyAudio::Sound.open(fname) do |snd|
     # fftしてまるめこんだのを用意するところ
     fft_slice = FFTW3.fft(na, -1).to_a[0, window_size / 2]
 
+    # p fft_slice.collect {|com| (com.abs / (window_size / 2) * 100 ).round }
+    
     # fftという配列にfftの結果をぶち込む
     # fft配列は512個、ここに時間ベースで値が入って行く！
     # つまりfft[]が周波数、そこのインデックスが時間ベース
-    # うん？やっぱ違うかも
-    j = 0
-    fft_slice.each do |x| 
-      fft[j] << x 
-      j += 1 
+    fft_slice.each_with_index do |complex, i| 
+      fft[i] << complex
     end
   end
 end
+# p fft[100].count
+
 
 def window_size
   1024
@@ -97,7 +98,7 @@ end
 format = Cairo::FORMAT_ARGB32
 width = 3000
 height = 600
-radius = 3 # 半径
+radius = 10 # 半径
 
 surface = Cairo::ImageSurface.new(format, width, height)
 context = Cairo::Context.new(surface)
@@ -114,10 +115,9 @@ context.fill
 fft.each_with_index do |compleces, i|
   ret_scale_rows(compleces).each_with_index do |val, j|
     context.set_source_rgb(val, 0, 0)
-    context.arc(j, i, radius, 0, 1 * Math::PI)
+    context.arc(j*10, i, radius, 0, 10 * Math::PI)
     context.fill
   end
-  p ret_scale_rows(compleces)[299]
   #break #ためしにひとつでbreak
 end
 
