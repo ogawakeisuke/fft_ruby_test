@@ -2,9 +2,10 @@ require "ruby-audio"
 require "narray"
 require "fftw3"
 require 'cairo'
+require './regression_line'
 
 
-fname = "beat.wav"
+fname = "src/beat.wav"
 window_size = 1024
 wave = Array.new
 
@@ -43,7 +44,7 @@ RubyAudio::Sound.open(fname) do |snd|
     end
   end
 end
-# p fft[100].count
+
 
 
 def window_size
@@ -108,17 +109,12 @@ context.set_source_rgb(1, 1, 1) # 白
 context.rectangle(0, 0, width, height)
 context.fill
 
-# 赤丸
-
-
-
 fft.each_with_index do |compleces, i|
   ret_scale_rows(compleces).each_with_index do |val, j|
     context.set_source_rgb(val, 0, 0)
     context.arc(j*10, i, radius, 0, 10 * Math::PI)
     context.fill
   end
-  #break #ためしにひとつでbreak
 end
 
 surface.write_to_png("hinomaru.png")
