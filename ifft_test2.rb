@@ -35,6 +35,10 @@ def buffer_to_file( buffer, filename, info)
   output.close
 end
 
+def sound_info
+  RubyAudio::SoundInfo.new(:channels => 1, :samplerate => 44100, :format => RubyAudio::FORMAT_WAV|RubyAudio::FORMAT_PCM_16)
+end
+
 
 
 
@@ -70,7 +74,7 @@ sound_data.each do |r|
   i += 1
 end
 
-buffer_to_file(data_result_buffer, "test2.wav", RubyAudio::SoundInfo.new(:channels => 1, :samplerate => 44100, :format => RubyAudio::FORMAT_WAV|RubyAudio::FORMAT_PCM_16))
+buffer_to_file(data_result_buffer, "test2.wav", sound_info)
 
 
 
