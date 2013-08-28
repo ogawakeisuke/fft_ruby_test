@@ -14,12 +14,12 @@ fft = Array.new(window_size / 2).collect { Array.new }
 #
 # https://github.com/jes5199/music-experiment/blob/master/util.rb
 #
-def fft_to_file( fft, filename, size, info )
+def fft_to_file( fft, size )
   result_data = FFTW3.ifft( fft )
-  data_to_file( result_data, filename, size, info, result_data.size )
+  data_to_file( result_data, size, result_data.size )
 end
 
-def data_to_file( data, filename, size, info, scale )
+def data_to_file( data, size, scale )
   result_buffer = RubyAudio::Buffer.new("float", size, 1)
   i = 0
   data.each do |r|
@@ -46,8 +46,9 @@ RubyAudio::Sound.open(fname) do |snd|
   while snd.read(buf) != 0
     na = NArray.to_na(buf.to_a)
 
-    fft_slice = FFTW3.fft(na).to_a[0, window_size]
-
+    fft = FFTW3.fft(na)
+    #fft_slice = fft[window_size / 2]
+  
     #
     # 処理自体はこれの半分の配列([fft_slice.to_a[0, windowsize/2])で考えて、実際は後半部の配列に同様の処理を施せばいけるはず
     #
@@ -56,7 +57,7 @@ RubyAudio::Sound.open(fname) do |snd|
     #   fft[i] << complex
     # end
 
-    data << fft_to_file( fft_slice, "test.wav", 1024,  RubyAudio::SoundInfo.new(:channels => 1, :samplerate => 44100, :format => RubyAudio::FORMAT_WAV|RubyAudio::FORMAT_PCM_16) )
+    data << fft_to_file( fft, 1024 )
   end
 end
 
