@@ -63,14 +63,65 @@ def filing_proccess(buffer_array)
 end
 
 def shuffle_process(fft_val)
-  fft_val.each_with_index do |fft_array,i|
+  fft_val.each_with_index do |fft_array, i|
     fft_val[i] = fft_array.shuffle
   end
   fft_val
 end
 
 
-fname = "src/pop.wav"
+def parallel_rect_shuffle(matrix_array, rect_size = 50)
+  x_lenge = matrix_array.last.size - rect_size
+  y_lenge = matrix_array.size - rect_size
+  start_x, goal_x, start_y =  rand(x_lenge), rand(x_lenge), rand(y_lenge)
+
+  matrix_array[start_y..(start_y + rect_size)].each do |columns|
+    columns[start_x..(start_x + rect_size)], columns[goal_x..(goal_x + rect_size)] =  columns[goal_x..(goal_x + rect_size)], columns[start_x..(start_x + rect_size)]
+  end
+  matrix_array
+end
+
+
+def random_rect_replace(matrix_array, rect_size = 100)
+  x_lenge = matrix_array.last.size - rect_size
+  y_lenge = matrix_array.size - rect_size
+  start_x, goal_x, start_y, goal_y =  rand(x_lenge), rand(x_lenge), rand(y_lenge), rand(y_lenge)
+
+  start_rect = Array.new(rect_size).collect { Array.new }
+  goal_rect = Array.new(rect_size).collect { Array.new }
+  ofset_rect_size = rect_size -1
+  #
+  # get startand goal lect
+  #
+  matrix_array[(start_y)..(start_y + ofset_rect_size)].each_with_index do |columns, i|
+    start_rect[i] << columns[(start_x)..(start_x + ofset_rect_size)]
+  end
+  matrix_array[(goal_y)..(goal_y + ofset_rect_size)].each_with_index do |columns, i|
+    goal_rect[i] << columns[goal_x..(goal_x + ofset_rect_size)]
+  end
+
+  start_rect.flatten!(1)
+  goal_rect.flatten!(1)
+  
+  #
+  # replace startand goal lect
+  #
+  matrix_array[(start_y)..(start_y + ofset_rect_size)].each_with_index do |columns, i|
+    #p columns[start_x..(start_x + ofset_rect_size)].first
+    
+    columns[start_x..(start_x + ofset_rect_size)] = goal_rect[i]
+  end
+  matrix_array[(goal_y)..(goal_y + ofset_rect_size)].each_with_index do |columns, i|
+    columns[goal_x..(goal_x + ofset_rect_size)] = start_rect[i]
+  end
+
+  matrix_array
+end
+
+
+
+
+fname = "src/untan.aiff"
 window_size = 1024
 fft = Array.new(window_size).collect { Array.new }
 buf = RubyAudio::Buffer.float(window_size)
@@ -86,8 +137,11 @@ RubyAudio::Sound.open(fname) do |snd|
   end
 end
 
+30.times do 
+  fft = random_rect_replace(fft)
+end
 
-filing_proccess ifft_process(shuffle_process(fft))
+filing_proccess ifft_process(fft)
 
 
 

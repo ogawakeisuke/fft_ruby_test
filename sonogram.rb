@@ -4,7 +4,7 @@ require "fftw3"
 require 'cairo'
 
 
-fname = "noise.wav"
+fname = "test2.wav"
 window_size = 1024
 
 #
