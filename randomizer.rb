@@ -70,7 +70,7 @@ def shuffle_process(fft_val)
 end
 
 
-def parallel_rect_shuffle(matrix_array, rect_size = 50)
+def parallel_rect_shuffle(matrix_array, rect_size = 400)
   x_lenge = matrix_array.last.size - rect_size
   y_lenge = matrix_array.size - rect_size
   start_x, goal_x, start_y =  rand(x_lenge), rand(x_lenge), rand(y_lenge)
@@ -81,8 +81,29 @@ def parallel_rect_shuffle(matrix_array, rect_size = 50)
   matrix_array
 end
 
+#
+# 超重い
+#
+def vertical_rect_shuffle(matrix_array, rect_size = 400)
+  regurate_size = matrix_array.last.size
+  
+  matrix_array.each_with_index do |fft_array, i|
+    matrix_array[i] = fft_array[0, regurate_size]
+  end
+  matrix_array = matrix_array.transpose
 
-def random_rect_replace(matrix_array, rect_size = 100)
+  x_lenge = matrix_array.last.size - rect_size
+  y_lenge = matrix_array.size - rect_size
+  start_x, goal_x, start_y =  rand(x_lenge), rand(x_lenge), rand(y_lenge)
+
+  matrix_array[start_y..(start_y + rect_size)].each do |columns|
+    columns[start_x..(start_x + rect_size)], columns[goal_x..(goal_x + rect_size)] =  columns[goal_x..(goal_x + rect_size)], columns[start_x..(start_x + rect_size)]
+  end
+  matrix_array.transpose
+end
+
+
+def random_rect_replace(matrix_array, rect_size = 400)
   x_lenge = matrix_array.last.size - rect_size
   y_lenge = matrix_array.size - rect_size
   start_x, goal_x, start_y, goal_y =  rand(x_lenge), rand(x_lenge), rand(y_lenge), rand(y_lenge)
@@ -121,7 +142,7 @@ end
 
 
 
-fname = "src/untan.aiff"
+fname = "src/guni.aiff"
 window_size = 1024
 fft = Array.new(window_size).collect { Array.new }
 buf = RubyAudio::Buffer.float(window_size)
@@ -137,7 +158,7 @@ RubyAudio::Sound.open(fname) do |snd|
   end
 end
 
-30.times do 
+100.times do 
   fft = random_rect_replace(fft)
 end
 
