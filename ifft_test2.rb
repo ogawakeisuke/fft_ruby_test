@@ -46,8 +46,11 @@ RubyAudio::Sound.open(fname) do |snd|
   while snd.read(buf) != 0
     na = NArray.to_na(buf.to_a)
 
-    fft_slice = FFTW3.fft(na).to_a[0, window_size / 2]
+    fft_slice = FFTW3.fft(na).to_a[0, window_size]
 
+    #
+    # 処理自体はこれの半分の配列([fft_slice.to_a[0, windowsize/2])で考えて、実際は後半部の配列に同様の処理を施せばいけるはず
+    #
 
     # fft_slice.each_with_index do |complex, i| 
     #   fft[i] << complex
