@@ -5,7 +5,7 @@ require "fftw3"
 require './regression_line'
 
 
-fname = "src/pinknoise.aif"
+fname = "src/pop.wav"
 window_size = 1024
 fft = Array.new(window_size / 2).collect { Array.new }
 
@@ -26,8 +26,7 @@ def data_to_file( data, filename, size, info, scale )
     result_buffer[i] = (r.respond_to?(:real) ? r.real : r.to_f) / scale
     i += 1
   end
-  p result_buffer.to_a
-  buffer_to_file( result_buffer, filename, info )
+  result_buffer.to_a
 end
 
 def buffer_to_file( buffer, filename, info)
@@ -41,7 +40,9 @@ end
 
 buf = RubyAudio::Buffer.float(window_size)
 
+data = []
 RubyAudio::Sound.open(fname) do |snd|
+
   while snd.read(buf) != 0
     na = NArray.to_na(buf.to_a)
 
@@ -52,7 +53,20 @@ RubyAudio::Sound.open(fname) do |snd|
     #   fft[i] << complex
     # end
 
-    fft_to_file( fft_slice, "test.wav", 1024,  RubyAudio::SoundInfo.new(:channels => 1, :samplerate => 44100, :format => RubyAudio::FORMAT_WAV|RubyAudio::FORMAT_PCM_16) )
+    data << fft_to_file( fft_slice, "test.wav", 1024,  RubyAudio::SoundInfo.new(:channels => 1, :samplerate => 44100, :format => RubyAudio::FORMAT_WAV|RubyAudio::FORMAT_PCM_16) )
   end
 end
+
+sound_data = data.flatten
+p sound_data.size
+data_result_buffer = RubyAudio::Buffer.new("float", sound_data.size, 1)
+i = 0
+sound_data.each do |r|
+  data_result_buffer[i] = (r.respond_to?(:real) ? r.real : r.to_f)
+  i += 1
+end
+
+buffer_to_file(data_result_buffer, "test2.wav", RubyAudio::SoundInfo.new(:channels => 1, :samplerate => 44100, :format => RubyAudio::FORMAT_WAV|RubyAudio::FORMAT_PCM_16))
+
+
 
