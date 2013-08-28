@@ -62,6 +62,13 @@ def filing_proccess(buffer_array)
   buffer_to_file(data_result_buffer, "test2.wav", sound_info)
 end
 
+def shuffle_process(fft_val)
+  fft_val.each_with_index do |fft_array,i|
+    fft_val[i] = fft_array.shuffle
+  end
+  fft_val
+end
+
 
 fname = "src/pop.wav"
 window_size = 1024
@@ -69,10 +76,9 @@ fft = Array.new(window_size).collect { Array.new }
 buf = RubyAudio::Buffer.float(window_size)
 
 RubyAudio::Sound.open(fname) do |snd|
-
   while snd.read(buf) != 0
     na = NArray.to_na(buf.to_a)
-    fft_array = FFTW3.fft(na).to_a[0, window_size]
+    fft_array = FFTW3.fft(na).to_a
   
     fft_array.each_with_index do |complex, i| 
       fft[i] << complex
@@ -81,7 +87,7 @@ RubyAudio::Sound.open(fname) do |snd|
 end
 
 
-filing_proccess ifft_process(fft)
+filing_proccess ifft_process(shuffle_process(fft))
 
 
 
