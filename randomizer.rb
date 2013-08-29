@@ -161,7 +161,7 @@ RubyAudio::Sound.open(fname) do |snd|
 end
 
 100.times do 
-  fft = random_rect_replace(fft)
+  fft = random_rect_replace(fft, 200)
 end
 
 filing_proccess ifft_process(fft)
