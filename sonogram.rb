@@ -40,7 +40,7 @@ end
 def ret_color_rows(compleces)
   ret_array = []
   compleces.each do |complex|
-    ret_array << color_pick_print(amp(complex).scale_between)
+    ret_array << color_pick_print(amp(complex).to_256)
   end
   ret_array
 end
@@ -48,7 +48,7 @@ end
 def ret_scale_rows(compleces)
   ret_array = []
   compleces.each do |complex|
-    ret_array << amp(complex).scale_between
+    ret_array << amp(complex).to_256
   end
   ret_array
 end
@@ -58,7 +58,11 @@ end
 # Numericのオーバーライドでスケールメソッド
 #
 class Numeric
-  def scale_between(from_min = 0.0, from_max = 1.0, to_min = 0, to_max = 255)
+  def to_256(from_min = 0.0, from_max = 1.0, to_min = 0, to_max = 255)
+   ( ((to_max - to_min) * (self - from_min)) / (from_max - from_min) + to_min ).round  # + 1
+  end
+
+    def to_cycle_float(from_min = 0, from_max = 255, to_min = 0.0, to_max = 1.0)
    ( ((to_max - to_min) * (self - from_min)) / (from_max - from_min) + to_min ).round  # + 1
   end
 end
