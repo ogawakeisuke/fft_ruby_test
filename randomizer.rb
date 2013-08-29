@@ -142,7 +142,9 @@ end
 
 
 
-fname = "src/guni.aiff"
+# fname = "src/guni.aiff"
+fname = ARGV[0] || STDIN.gets.strip
+
 window_size = 1024
 fft = Array.new(window_size).collect { Array.new }
 buf = RubyAudio::Buffer.float(window_size)
