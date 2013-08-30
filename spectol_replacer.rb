@@ -65,8 +65,8 @@ end
 
 def inverser(matrix_array, window_size)
   matrix_array.each do |timeline|
-    timeline.each_with_index do |complex,i|
-      timeline[i] = (complex.abs).inversing
+    timeline.each_with_index do |complex, i|
+      timeline[i] = complex.inversing
     end
   end 
 end
@@ -102,7 +102,7 @@ RubyAudio::Sound.open(fname) do |snd|
 end
 
 
-fft = inverser(fft, window_size)
+#fft = inverser(fft, window_size)
 
 filing_proccess ifft_process(fft)
 
